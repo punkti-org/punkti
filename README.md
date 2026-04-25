@@ -1,32 +1,125 @@
 # Punkti
 
-> Punkti is a decentralized network of 200-character signed messages anchored to 3D geohashes, replicated by append-only log gossip.
+> Punkti is an open protocol for placing small, signed messages at precise addresses in 3D space.
 
-**Status:** DRAFT v0.5 — open for review and implementation.
+A Punkti atom is a tiny signed event anchored to:
 
-**Specification:** [Punkti.md](./Punkti.md)
+* a 3D geohash
+* a timestamp
+* an author key
+* a short message
+
+The goal is simple:
+
+> Every cubic meter of the world should be addressable, writable, and readable without a central authority.
 
 ---
 
 ## What this repo is
 
-This repo holds the **Punkti protocol specification**. Nothing else.
+This repository contains the **Punkti protocol specification**.
 
-Punkti is the open protocol. It defines three things only: the **atom** (a signed text event at a point in time and 3D space), the **storage model** (append-only NDJSON), and the **sync contract** (gossip over HTTP with `Range` pulls). If an atom can move over any medium that preserves bytes, Punkti can work over that medium.
+It defines:
 
-**Punkti is not a product.** There are multiple implementations, and more are expected. Think Matrix / Element, or HTTP / Apache.
+1. **The atom** — a signed message connected to a point in 3D space
+2. **The storage format** — append-only NDJSON logs
+3. **The sync model** — simple peer replication over HTTP range pulls
 
-- **Punkto** — one reference implementation (PWA + serving-node mesh)
-- *your-kti-here* — write your own; interop is the only requirement
+Punkti is not a hosted product.
+
+It is the open foundation that different implementations can build on.
+
+---
+
+## Punkti vs Punkto
+
+| Name       | Meaning                                             |
+| ---------- | --------------------------------------------------- |
+| **Punkti** | The open protocol and shared specification          |
+| **Punkto** | One hosted / product implementation built on Punkti |
+
+Think:
+
+* HTTP → many web servers
+* Git → many hosts
+* Matrix → many clients
+* Punkti → many spatial nodes
+
+---
+
+## Why this matters
+
+Most digital systems describe the world with:
+
+* files
+* URLs
+* database rows
+
+Punkti describes the world with:
+
+> addressed space
+
+This enables:
+
+* spatial computing
+* AR anchors
+* drones
+* sensors
+* geology and terrain data
+* underground infrastructure
+* decentralized mapping
+* local-first field notes
+
+---
+
+## Status
+
+**Draft v0.5**
+
+The protocol is intentionally small and evolving.
+
+Feedback, criticism, and alternative implementations are welcome.
+
+---
+
+## Specification
+
+Read the full protocol here:
+
+👉 [Punkti Specification](./Punkti.md)
+
+---
+
+## Design principles
+
+* Small beats large
+* Plain text beats magic
+* Append-only beats mutable state
+* Interop beats platform lock-in
+* Local-first beats cloud-first
+* Subtraction beats addition
+
+---
 
 ## Conformance
 
-An implementation interoperates with the network if it satisfies the six rules in [Punkti.md §7](./Punkti.md#7-conformance--punkti-v1-minimal). That is sufficient — no registration, no central authority.
+An implementation is Punkti-compatible if it can:
+
+1. create valid atoms
+2. sign them
+3. store them without modification
+4. expose append-only logs
+5. sync logs with peers
+6. reject invalid signatures
+
+No registration.
+No central authority.
+No permission required.
+
+---
 
 ## License
 
-[CC0 1.0 Universal](./LICENSE) — public domain dedication. Implementations are free and unrestricted.
+CC0 1.0 Universal.
 
-## Contributing
-
-Protocol changes are proposed as diffs against [Punkti.md](./Punkti.md). Open a pull request with the change, the reason, and what gets removed. Subtraction beats addition. If a change does not fit the one-sentence product above, it does not belong here.
+The protocol is public domain.

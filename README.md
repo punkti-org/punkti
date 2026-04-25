@@ -1,6 +1,6 @@
 # Punkti
 
-> Punkti is an open protocol for placing small, signed messages at precise addresses in 3D space.
+> Punkti is an open protocol for placing small, cryptographically signed messages at precise addresses in 3D space.
 
 A Punkti atom is a tiny signed event anchored to:
 
@@ -9,9 +9,11 @@ A Punkti atom is a tiny signed event anchored to:
 * an author key
 * a short message
 
-The goal is simple:
+---
 
-> Every cubic meter of the world should be addressable, writable, and readable without a central authority.
+## The goal
+
+> Give every cubic meter of the world a readable and writable address.
 
 ---
 
@@ -49,13 +51,13 @@ Think:
 
 ## Why this matters
 
-Most digital systems describe the world with:
+Most digital systems describe the world using:
 
 * files
 * URLs
 * database rows
 
-Punkti describes the world with:
+Punkti describes the world using:
 
 > addressed space
 
@@ -72,9 +74,38 @@ This enables:
 
 ---
 
+## Example
+
+A drone records a measurement at a specific location:
+
+* location → 3D geohash: `u4pruydqqvj`
+* altitude → `42m`
+* message → `"wind: 12m/s"`
+
+This becomes a signed Punkti atom stored at that address.
+
+Any compatible node can later retrieve or replicate it.
+
+---
+
+## Conceptual model
+
+```
+        Z (altitude)
+        |
+        ●  ← Punkti (signed message)
+       / \
+      /   \
+     X     Y
+
+A point in 3D space becomes an addressable location.
+```
+
+---
+
 ## Status
 
-**Draft v0.5**
+**Early draft (v0.5)**
 
 The protocol is intentionally small and evolving.
 

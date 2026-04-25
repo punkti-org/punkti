@@ -143,9 +143,7 @@ An implementation is Punkti-compatible if it can:
 5. sync logs with peers
 6. reject invalid signatures
 
-No registration.
-No central authority.
-No permission required.
+
 
 ---
 

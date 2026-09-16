@@ -5,7 +5,7 @@
 A Punkti atom is a tiny signed event anchored to:
 
 - a horizontal 2D geohash,
-- a WGS84 vertical coordinate,
+- a WGS84 ellipsoidal height,
 - a timestamp,
 - an author/key reference,
 - a short message.
@@ -19,16 +19,16 @@ A Punkti atom is a tiny signed event anchored to:
 The recommended Punkti point profile uses:
 
 ```text
-10-character 2D geohash + integer WGS84 metres
+10-character 2D geohash + "_" + integer WGS84 metres
 ```
 
 Example:
 
 ```text
-u3butz7k9q.23
+u3butz7k9q_23
 ```
 
-The horizontal and vertical components remain separately searchable and can use finer precision when required.
+Horizontal and vertical components remain separately searchable and can use finer precision when required.
 
 ---
 
@@ -40,11 +40,9 @@ It defines:
 
 1. **The atom** — a signed message connected to a point in 3D space.
 2. **The storage model** — append-oriented, content-addressed atom storage.
-3. **The sync model** — simple peer replication over HTTP byte-range pulls.
+3. **The sync model** — peer replication over immutable HTTP byte-range log generations.
 
-Punkti is not a hosted product.
-
-It is the open foundation that different implementations can build on.
+Punkti is not a hosted product. It is the open foundation that different implementations can build on.
 
 ---
 
@@ -69,16 +67,19 @@ Think:
 Punkti keeps horizontal and vertical addressing separate:
 
 ```text
-h = <2D-geohash>.<WGS84-height-metres>
+h = <2D-geohash>_<WGS84-ellipsoidal-height-metres>
 ```
 
 Examples:
 
 ```text
-u3butz7k9q.23
-u3butz7k9q.-18
-u3butz7k9q.23.5
+u3butz7k9q_23
+u3butz7k9q_-18
+u3butz7k9q_0.5
+u3butz7k9q_23.025
 ```
+
+`_` is the XY/Z delimiter. `.` is used only as the decimal point inside the height.
 
 This keeps addresses readable and makes ordinary database indexing cheap:
 
@@ -94,11 +95,11 @@ This keeps addresses readable and makes ordinary database indexing cheap:
 A drone records a measurement:
 
 - location → `u3butz7k9q`
-- WGS84 height → `42 m`
-- Punkti spatial address → `u3butz7k9q.42`
+- WGS84 ellipsoidal height → `42 m`
+- Punkti spatial address → `u3butz7k9q_42`
 - message → `"wind: 12m/s"`
 
-That becomes a signed Punkti atom stored at that spatial address.
+That becomes a signed Punkti atom at that spatial address.
 
 Any compatible node can later retrieve or replicate it.
 
@@ -106,19 +107,20 @@ Any compatible node can later retrieve or replicate it.
 
 ## Status
 
-**Draft v0.5.1**
+**v0.5.1 release candidate**
 
-v0.5.1 is a protocol-hardening release focused on deterministic object identity, persistent validity, spatial-address clarity, and robust sync.
+v0.5.1 is the protocol-hardening release: deterministic statement identity, canonical parsing, immutable log generations, and race-safe HTTP Range synchronization.
 
-Post-quantum authority and algorithm agility are intentionally reserved for Punkti v0.6.
+It is intentionally wire-breaking relative to v0.5.
+
+Identity/key succession, post-quantum authority, and algorithm agility are reserved for Punkti v0.6.
 
 ---
 
-## Specification
+## Specification and vectors
 
-Read the protocol:
-
-[Punkti Specification](./Punkti.md)
+- [Punkti Specification](./Punkti.md)
+- [Normative v0.5.1 vectors](./VECTORS.md)
 
 ---
 
@@ -138,11 +140,13 @@ Read the protocol:
 A minimal Punkti v0.5.1 implementation can:
 
 1. parse and validate the five core atom fields,
-2. compute and deduplicate by `mid`,
-3. preserve the five core values,
-4. expose the canonical HTTP resources,
-5. sync append-only logical logs using `(log_id, byte_offset)`,
-6. implement the Punkti XY.Z spatial-address grammar.
+2. compute and deduplicate by the content-complete `mid`,
+3. verify the strict Ed25519 profile when a key binding is available,
+4. preserve core values while treating extensions as non-core,
+5. expose immutable logical-log generations,
+6. sync with `(log_id, byte_offset)` and response-bound `Punkti-Log-Id`,
+7. implement the canonical `xy_z` spatial-address grammar,
+8. pass the normative interoperability vectors.
 
 ---
 

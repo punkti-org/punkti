@@ -1,6 +1,7 @@
 # Punkti Protocol
 
-**Version:** v0.5.1 (release candidate)  
+**Version:** v0.5.1  
+**Status:** Frozen  
 **Canonical source:** https://github.com/punkti-org/punkti  
 **License:** CC0 1.0 (public domain dedication) — implementations free and unrestricted
 
@@ -801,7 +802,7 @@ They cover:
 - Range response races and resets,
 - spatial shards.
 
-Two independent implementations SHOULD produce identical outcomes for every vector before v0.5.1 is frozen.
+These vectors are the frozen interoperability contract for v0.5.1. An implementation claiming `v0.5.1-MINIMAL` conformance MUST match their defined outcomes. Changes that alter those outcomes require a new protocol version.
 
 ---
 
@@ -813,4 +814,4 @@ Two independent implementations SHOULD produce identical outcomes for every vect
 | v0.4 | 2026-04-19 | Core RFC — narrowed to protocol + storage + sync; RFC 2119 language. |
 | v0.4.1 | 2026-04-21 | Clarified HTTP readability of serving resources. |
 | v0.5 | 2026-04-23 | Core-only protocol draft. |
-| v0.5.1 | 2026-09-16 | Breaking hardening release candidate: content-complete `mid`, canonical `xy_z` spatial address, strict timestamp/signature grammar, receiver-clock-independent validity, duplicate-safe append, immutable log generations, response-bound `log_id`, implementation-defined storage, and normative interop vectors. |
+| v0.5.1 | 2026-09-16 | Breaking hardening release: content-complete `mid`, canonical `xy_z` spatial address, strict timestamp/signature grammar, receiver-clock-independent validity, duplicate-safe append, immutable log generations, response-bound `log_id`, implementation-defined storage, and normative interop vectors. |

@@ -1,19 +1,34 @@
 # Punkti
 
-> Punkti is an open protocol for placing small, cryptographically signed messages at precise addresses in 3D space.
+> Punkti is an open protocol for placing small, cryptographically signed messages at readable addresses in 3D space.
 
 A Punkti atom is a tiny signed event anchored to:
 
-* a 3D geohash
-* a timestamp
-* an author key
-* a short message
+- a horizontal 2D geohash,
+- a WGS84 ellipsoidal height,
+- a timestamp,
+- an author/key reference,
+- a short message.
 
 ---
 
 ## The goal
 
 > Give every cubic meter of the world a readable and writable address.
+
+The recommended Punkti point profile uses:
+
+```text
+10-character 2D geohash + "_" + integer WGS84 metres
+```
+
+Example:
+
+```text
+u3butz7k9q_23
+```
+
+Horizontal and vertical components remain separately searchable and can use finer precision when required.
 
 ---
 
@@ -23,127 +38,115 @@ This repository contains the **Punkti protocol specification**.
 
 It defines:
 
-1. **The atom** — a signed message connected to a point in 3D space
-2. **The storage format** — append-only NDJSON logs
-3. **The sync model** — simple peer replication over HTTP range pulls
+1. **The atom** — a signed message connected to a point in 3D space.
+2. **The storage model** — append-oriented, content-addressed atom storage.
+3. **The sync model** — peer replication over immutable HTTP byte-range log generations.
 
-Punkti is not a hosted product.
-
-It is the open foundation that different implementations can build on.
+Punkti is not a hosted product. It is the open foundation that different implementations can build on.
 
 ---
 
 ## Punkti vs Punkto
 
-| Name       | Meaning                                             |
-| ---------- | --------------------------------------------------- |
-| **Punkti** | The open protocol and shared specification          |
-| **Punkto** | One hosted / product implementation built on Punkti |
+| Name | Meaning |
+|---|---|
+| **Punkti** | The open protocol and shared specification |
+| **Punkto** | One hosted/product implementation built on Punkti |
 
 Think:
 
-* HTTP → many web servers
-* Git → many hosts
-* Matrix → many clients
-* Punkti → many spatial nodes
+- HTTP → many web servers
+- Git → many hosts
+- Matrix → many clients
+- Punkti → many spatial nodes
 
 ---
 
-## Why this matters
+## Spatial addressing
 
-Most digital systems describe the world using:
+Punkti keeps horizontal and vertical addressing separate:
 
-* files
-* URLs
-* database rows
+```text
+h = <2D-geohash>_<WGS84-ellipsoidal-height-metres>
+```
 
-Punkti describes the world using:
+Examples:
 
-> addressed space
+```text
+u3butz7k9q_23
+u3butz7k9q_-18
+u3butz7k9q_0.5
+u3butz7k9q_23.025
+```
 
-This enables:
+`_` is the XY/Z delimiter. `.` is used only as the decimal point inside the height.
 
-* spatial computing
-* AR anchors
-* drones
-* sensors
-* geology and terrain data
-* underground infrastructure
-* decentralized mapping
-* local-first field notes
+This keeps addresses readable and makes ordinary database indexing cheap:
+
+- geohash prefix matching for XY,
+- numeric range filtering for Z,
+- no required GIS database,
+- no 3D bit-interleaving decoder.
 
 ---
 
 ## Example
 
-A drone records a measurement at a specific location:
+A drone records a measurement:
 
-* location → 3D geohash: `u4pruydqqvj`
-* altitude → `42m`
-* message → `"wind: 12m/s"`
+- location → `u3butz7k9q`
+- WGS84 ellipsoidal height → `42 m`
+- Punkti spatial address → `u3butz7k9q_42`
+- message → `"wind: 12m/s"`
 
-This becomes a signed Punkti atom stored at that address.
+That becomes a signed Punkti atom at that spatial address.
 
 Any compatible node can later retrieve or replicate it.
 
 ---
 
-## Conceptual model
-
-```
-        Z (altitude)
-        |
-        ●  ← Punkti (signed message)
-       / \
-      /   \
-     X     Y
-
-A point in 3D space becomes an addressable location.
-```
-
----
-
 ## Status
 
-**Early draft (v0.5)**
+**v0.5.1 — frozen**
 
-The protocol is intentionally small and evolving.
+v0.5.1 is the frozen protocol-hardening release: deterministic statement identity, canonical parsing, immutable log generations, and race-safe HTTP Range synchronization.
 
-Feedback, criticism, and alternative implementations are welcome.
+It is intentionally wire-breaking relative to v0.5. Future incompatible core changes require a new protocol version.
+
+Identity/key succession, post-quantum authority, and algorithm agility are reserved for Punkti v0.6.
 
 ---
 
-## Specification
+## Specification and vectors
 
-Read the full protocol here:
-
-👉 [Punkti Specification](./Punkti.md)
+- [Punkti Specification](./Punkti.md)
+- [Normative v0.5.1 vectors](./VECTORS.md)
 
 ---
 
 ## Design principles
 
-* Small beats large
-* Plain text beats magic
-* Append-only beats mutable state
-* Interop beats platform lock-in
-* Local-first beats cloud-first
-* Subtraction beats addition
+- Small beats large
+- Plain text beats magic
+- Append-only beats mutable state
+- Interop beats platform lock-in
+- Local-first beats cloud-first
+- Subtraction beats addition
 
 ---
 
 ## Conformance
 
-An implementation is Punkti-compatible if it can:
+A minimal Punkti v0.5.1 implementation can:
 
-1. create valid atoms
-2. sign them
-3. store them without modification
-4. expose append-only logs
-5. sync logs with peers
-6. reject invalid signatures
-
-
+1. parse and validate the five core atom fields,
+2. compute and deduplicate by the content-complete `mid`,
+3. verify the strict Ed25519 profile when a key binding is available,
+4. preserve core values while treating extensions as non-core,
+5. expose immutable logical-log generations,
+6. sync with `(log_id, byte_offset)` and response-bound `Punkti-Log-Id`,
+7. implement the canonical `xy_z` spatial-address grammar,
+8. pass the normative interoperability vectors.
 
 ---
 

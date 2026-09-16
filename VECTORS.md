@@ -516,8 +516,8 @@ Prefix matching is applied only to `xy`, never to `_z`.
 
 ---
 
-## Release gate
+## Frozen interoperability contract
 
-Before freezing v0.5.1, at least two independent implementations SHOULD be run against these vectors.
+These vectors define the interoperability contract for frozen Punkti v0.5.1.
 
-Any disagreement in structural validity, `mid`, signature verification, duplicate handling, log-generation handling, or cursor movement is a protocol defect to resolve before freeze.
+An implementation claiming `v0.5.1-MINIMAL` conformance MUST match the stated structural-validity, `mid`, signature-verification, duplicate-handling, log-generation, and cursor outcomes. Any change to those defined outcomes requires a new protocol version.

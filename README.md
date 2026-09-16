@@ -107,11 +107,11 @@ Any compatible node can later retrieve or replicate it.
 
 ## Status
 
-**v0.5.1 release candidate**
+**v0.5.1 — frozen**
 
-v0.5.1 is the protocol-hardening release: deterministic statement identity, canonical parsing, immutable log generations, and race-safe HTTP Range synchronization.
+v0.5.1 is the frozen protocol-hardening release: deterministic statement identity, canonical parsing, immutable log generations, and race-safe HTTP Range synchronization.
 
-It is intentionally wire-breaking relative to v0.5.
+It is intentionally wire-breaking relative to v0.5. Future incompatible core changes require a new protocol version.
 
 Identity/key succession, post-quantum authority, and algorithm agility are reserved for Punkti v0.6.
 

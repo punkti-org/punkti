@@ -40,7 +40,7 @@ It defines:
 
 1. **The atom** — a signed message connected to a point in 3D space.
 2. **The storage model** — append-oriented, content-addressed atom storage.
-3. **The sync model** — peer replication over immutable HTTP byte-range log generations.
+3. **The sync model** — v0.5.1 uses immutable HTTP byte-range log generations; the accepted v0.6 draft direction is static publication over ordinary HTTP, with dynamic sync APIs optional accelerators.
 
 Punkti is not a hosted product. It is the open foundation that different implementations can build on.
 
@@ -113,7 +113,9 @@ v0.5.1 is the frozen protocol-hardening release: deterministic statement identit
 
 It is intentionally wire-breaking relative to v0.5. Future incompatible core changes require a new protocol version.
 
-Identity/key succession, post-quantum authority, and algorithm agility are reserved for Punkti v0.6.
+Identity/key succession, post-quantum authority, algorithm agility, and the new replication profile are reserved for Punkti v0.6.
+
+**v0.6 is not frozen.** The Founder-accepted architecture direction uses human-readable `h=<xy>_<z>` addressing and makes static publication the normative replication/correctness path. See [Punkti v0.6 Draft Architecture](./Punkti-v0.6-draft.md). Dynamic PUSH/Range-PULL style APIs may exist as optional accelerators, but are not required for a conforming static publication.
 
 ---
 

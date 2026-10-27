@@ -107,21 +107,21 @@ Any compatible node can later retrieve or replicate it.
 
 ## Status
 
-**v0.5.1 — frozen**
+**v0.6 — FROZEN (2026-10-27)**
 
-v0.5.1 is the frozen protocol-hardening release: deterministic statement identity, canonical parsing, immutable log generations, and race-safe HTTP Range synchronization.
+Punkti v0.6 freezes the complete Layer-3 contract: canonical carrier/signing/MID/R identity, human-readable `h=<xy>_<z>` spatial addressing, and static publication/replication over ordinary HTTP. Dynamic PUSH/Range-PULL/session mechanisms are optional accelerators, not conformance requirements. Replication packs are a standardized optional accelerator; canonical individual R objects remain sufficient. The reserved publication index key `~` represents unanchored atoms (`h=""`).
 
-It is intentionally wire-breaking relative to v0.5. Future incompatible core changes require a new protocol version.
-
-Identity/key succession, post-quantum authority, algorithm agility, and the new replication profile are reserved for Punkti v0.6.
-
-**v0.6 is not frozen.** The Founder-accepted architecture direction uses human-readable `h=<xy>_<z>` addressing and makes static publication the normative replication/correctness path. See [Punkti v0.6 Draft Architecture](./Punkti-v0.6-draft.md). Dynamic PUSH/Range-PULL style APIs may exist as optional accelerators, but are not required for a conforming static publication.
+Frozen v0.5.1 remains available unchanged as the predecessor protocol version. Future incompatible Layer-3 changes require a new protocol version.
 
 ---
 
 ## Specification and vectors
 
-- [Punkti Specification](./Punkti.md)
+- [Punkti v0.6 carrier / Layer-3 contract](./Punkti-v0.6.md)
+- [Punkti v0.6 XY_Z spatial contract](./Punkti-v0.6-spatial.md)
+- [Punkti v0.6 static publication contract](./Punkti-v0.6-publication.md)
+- [Punkti v0.6 normative publication vectors](./VECTORS-v0.6.md)
+- [Frozen Punkti v0.5.1 specification](./Punkti.md)
 - [Normative v0.5.1 vectors](./VECTORS.md)
 
 ---

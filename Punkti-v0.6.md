@@ -1,10 +1,10 @@
 # Punkti v0.6 — Layer 3 Reset
 
-Status: **FROZEN — Punkti v0.6 Layer 3, Founder-approved 2026-10-27**
+Status: **v0.6 spatial-only correction under review**. v0.6 is **reopened in place** by Founder decision on **2026-10-29**; the **2026-10-27 freeze was explicitly reopened**. **Re-freeze happens only after independent evidence plus Founder acceptance**. The `punkti/0.6` namespace and frozen v0.5.1 history remain unchanged.
 Scope: Minimal virtual Layer-3 carrier and provenance boundary.
 Compatibility: Frozen v0.5.1 atoms coexist unchanged with the explicitly branded v0.6 namespace.
 
-This document is frozen together with the accepted XY_Z spatial profile and static publication contract. Layer-4 semantics, Punkto UI/product behavior, BRTH, messaging, trust/reputation and optional dynamic acceleration remain outside this freeze.
+This correction covers the carrier, XY_Z spatial profile and static publication contract together. Layer-4 semantics, BRTH, messaging, trust/reputation and optional dynamic acceleration remain outside this correction, except for the explicit Punkto reply-address rule below.
 
 **Founder decisions incorporated:** (1) Geo is native Layer 3: `h` is spatial addressing, not decorative/application metadata; XY denotes horizontal position, Z physical altitude, and ranges select spatial addresses. Spatial range subscriptions and range-scoped reconciliation are first-class requirements for the subsequent Mesh. (2) `x` remains opaque Layer-4/application payload. (3) BRTH is persistent actor identity at Layer 4, usable by AI instances as well as humans and other actors. Frozen v0.5.1 remains unchanged; PR #111 must not be modified during its frozen review state. This proposal does not start Mesh.
 
@@ -25,11 +25,11 @@ Dynamic Mesh work is no longer normative for Punkti 0.6 and is retained only as 
 | Atom envelope/canonical bytes | Parse bounded structure; preserve canonical content | Interpret payload and extensions | Unknown application types remain admissible. |
 | Immutable content addressing (MID) | Compute immutable content digest | Assign domain meaning to addressed objects | An address is not a person. |
 | Timestamp | Carry a signed integer timestamp | Interpret event time, freshness and chronology | No trusted clock or global ordering is implied. |
-| Spatial address (`h`, XY_Z) | Carry, structurally check and operate on native spatial addresses/ranges | Interpret application meaning and physical claims | XY is horizontal position; Z is physical altitude, not application meaning. No proof of presence; legacy anchors stay unchanged. |
+| Spatial address (`h`, XY_Z) | Require `<xy>_<z>` for every record; structurally check before algorithm dispatch and operate on native spatial addresses/ranges | Interpret application meaning and physical claims | XY is horizontal position; Z is physical altitude, not application meaning. No proof of presence; legacy anchors stay unchanged. |
 | Signature/provenance envelope | Verify supported signature schemes over defined bytes | Decide trust and authority | Verification proves control of a key only. |
 | Self-certifying public key | Embed key; bind it into signed content and MID | Associate keys with identities | No external registry prerequisite for v0.6. |
 | Algorithm/version identifiers | Dispatch explicitly; preserve unsupported values | Choose application assurance policy | Never guess or downgrade an algorithm. |
-| References/linking | Carry content-addressed targets and opaque relations | Interpret reply, parent, identity or authorization relations | Missing targets do not invalidate the carrier. |
+| References/linking | Carry content-addressed targets and opaque relations | Interpret reply, parent, identity or authorization relations; a Punkto L4 reply MUST use the same exact `h` as its parent | Missing targets do not invalidate the carrier. |
 | Validation state | Report structure and provenance separately | Evaluate semantic validity | Unknown is not verified. |
 | Synchronization semantics | Transfer bytes, deduplicate addresses, reconcile spatially scoped sets | Select application views | Spatial selection needs no payload interpretation; no semantic filtering in the core contract. |
 | Recovery | Carry opaque data if supplied | Recovery words, derivation and restoration | Secrets should not be published as atoms. |
@@ -72,7 +72,7 @@ Proposed transport is a UTF-8 JSON object with exactly `v`, `t`, `h`, `x`, `alg`
 |---|---|
 | `v` | Literal string `punkti/0.6`. |
 | `t` | JSON integer, Unix milliseconds; exact accepted spelling `0\|[1-9][0-9]*`, maximum 9007199254740991. Reject `-0`, negatives, leading zeros, plus signs, decimal points and exponents. |
-| `h` | Empty string for no spatial anchor, otherwise `<xy>_<z>` under [the normative spatial profile candidate](PUNKTI_0_6_SPATIAL_XY_Z.md): 4–12 lowercase 2D geohash characters, canonical decimal WGS84 ellipsoidal metres, at most 32 characters total. |
+| `h` | Required `<xy>_<z>` under [the normative spatial profile](Punkti-v0.6-spatial.md): XY is 4–12 characters from `0123456789bcdefghjkmnpqrstuvwxyz`; Z is canonical exact signed decimal WGS84 ellipsoidal metres (§2.3); total length **6..32 characters**. Empty, missing, null or malformed `h` is `INVALID-structural`. |
 | `x` | Application payload as a UTF-8 string; no required type prefix or schema. |
 | `alg` | Nonempty ASCII algorithm identifier, maximum 128 bytes; proposed known profile `ed25519`. Case-sensitive, no aliases. |
 | `pk` | Canonical padded RFC 4648 base64 public-key bytes; nonempty. |
@@ -109,7 +109,7 @@ Canonical transfer record `R = LP(C) || LP(base64_decode(sig))`. A receiver reta
 
 For the proposed `ed25519` profile, `pk` is the raw 32-byte public key and `sig` is the raw 64-byte Ed25519 signature over `S`, using standard Ed25519 rather than prehash mode. The verifier profile needs reviewed malformed-key and signature-rejection vectors before freeze. Embedded public material supplies self-certifying provenance: a verified signature proves control of the corresponding signing key, not a name, person, authorization or truth claim.
 
-Nodes MUST NOT substitute an algorithm, infer it from key length, or fall back after verification fails. Unsupported `alg` values remain opaque and replicable with an explicit unverified mark. Future algorithm profiles, including PQ, specify their own key/signature encodings and review requirements. Legacy v0.5.1 remains a separate classic Ed25519 path with its original signing input; it does not gain an embedded key retroactively.
+Nodes MUST NOT substitute an algorithm, infer it from key length, or fall back after verification fails. Unsupported `alg` values remain opaque and replicable with an explicit unverified mark only after structural validation passes. Future algorithm profiles, including PQ, specify their own key/signature encodings and review requirements. Legacy v0.5.1 remains a separate classic Ed25519 path with its original signing input; it does not gain an embedded key retroactively.
 
 ### Validation state
 
@@ -119,10 +119,14 @@ Three tiers remain separate: structural validity is an L3 MUST; provenance verif
 |---|---|
 | `VALID` | Structure and supported provenance verification pass; no semantic endorsement. |
 | `UNVERIFIABLE-alg` | Structure passes, algorithm unsupported; preserve and replicate as unverified. |
-| `INVALID-structural` | Envelope, framing, canonical encoding or required fields fail; reject from the valid atom store. |
+| `INVALID-structural` | Envelope, framing, canonical encoding or required fields fail, including empty, missing, null or malformed `h`; reject before and independently of algorithm dispatch. |
 | `INVALID-provenance` | Structure passes but a supported signature fails; reject/quarantine that record, never label it valid. |
 | `UNVERIFIABLE-key` | Legacy-only observation: external key material is unavailable; preserve the original legacy record without asserting verified provenance. |
 | `OPAQUE-version` | Future carrier version unsupported; preserve transfer bytes without asserting inner structural or provenance validity. |
+
+Every v0.6 record MUST carry a canonical spatial address. Structural address validation happens before and independently of algorithm dispatch: an unsupported `alg` MUST NOT rescue an invalid or empty address. Never assign a default `h`, synthesise `_0`, or derive a location from the client, network, IP address or device.
+
+A Punkto L4 reply MUST use the **same exact `h`** as its parent. Punkti L3 transports opaque references and does not interpret "reply". This correction introduces no compulsory semantic identity channel, names, moderation, communities or object-location claims.
 
 The three requested primary states cannot honestly represent a forged supported signature; the additional failure state avoids conflating provenance with structure. Missing/empty signatures are structural failures, not unknown algorithms. Validation observations are local and recomputable when verifier support changes; peer claims are not trusted as verification evidence.
 
@@ -144,7 +148,7 @@ Minimal illustrative JSON (angle-bracket values are placeholders, not a valid si
 {
   "v": "punkti/0.6",
   "t": 0,
-  "h": "",
+  "h": "u3butz7k9q_23",
   "x": "opaque application payload",
   "alg": "ed25519",
   "pk": "<base64 raw public key>",
@@ -225,4 +229,4 @@ The accepted publication model is a tiny mutable discovery root pointing to immu
 
 The first experiment is preserved under `experimental/punkti-v0.6-static/` and demonstrated daemon-free replication through a plain static HTTP server, two-/three-node convergence, hostile/failure handling, and a strong request-count advantage for immutable replication packs.
 
-This section records the accepted architecture direction only. Punkti 0.6 is **not frozen** until the final normative publication specification and deterministic vectors are Founder-approved.
+The 2026-10-27 freeze was explicitly reopened in place by Founder decision on 2026-10-29. This is the **v0.6 spatial-only correction under review**; re-freeze happens only after independent evidence plus Founder acceptance.

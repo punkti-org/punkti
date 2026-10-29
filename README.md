@@ -107,9 +107,9 @@ Any compatible node can later retrieve or replicate it.
 
 ## Status
 
-**v0.6 — FROZEN (2026-10-27)**
+Status: **v0.6 spatial-only correction under review**. v0.6 is **reopened in place** by Founder decision on **2026-10-29**; the **2026-10-27 freeze was explicitly reopened**. **Re-freeze happens only after independent evidence plus Founder acceptance**. The `punkti/0.6` namespace and frozen v0.5.1 history remain unchanged.
 
-Punkti v0.6 freezes the complete Layer-3 contract: canonical carrier/signing/MID/R identity, human-readable `h=<xy>_<z>` spatial addressing, and static publication/replication over ordinary HTTP. Dynamic PUSH/Range-PULL/session mechanisms are optional accelerators, not conformance requirements. Replication packs are a standardized optional accelerator; canonical individual R objects remain sufficient. The reserved publication index key `~` represents unanchored atoms (`h=""`).
+Punkti v0.6 defines the complete Layer-3 contract: canonical carrier/signing/MID/R identity, human-readable `h=<xy>_<z>` spatial addressing, and static publication/replication over ordinary HTTP. Dynamic PUSH/Range-PULL/session mechanisms are optional accelerators, not conformance requirements. Replication packs are a standardized optional accelerator; canonical individual R objects remain sufficient. Every v0.6 record requires canonical `h=<xy>_<z>`: 4–12 lowercase geohash characters, an underscore and canonical exact signed decimal WGS84 ellipsoidal metres, 6..32 characters total. Empty, missing, null or malformed addresses fail structural validation before algorithm dispatch. Publications contain only geographical index keys; all eligible records participate in XY routing. An unrestricted scope selects all anchored records. Punkto L4 replies use their parent's same exact `h`; Punkti L3 keeps references opaque.
 
 Frozen v0.5.1 remains available unchanged as the predecessor protocol version. Future incompatible Layer-3 changes require a new protocol version.
 

@@ -1,6 +1,6 @@
 # Punkti v0.6 — Layer 3 Reset
 
-Status: **v0.6 spatial-only correction under review**. v0.6 is **reopened in place** by Founder decision on **2026-10-29**; the **2026-10-27 freeze was explicitly reopened**. **Re-freeze happens only after independent evidence plus Founder acceptance**. The `punkti/0.6` namespace and frozen v0.5.1 history remain unchanged.
+Status: **FROZEN — Founder-accepted spatial-only Punkti v0.6, 2026-10-29**. The 2026-10-27 freeze was reopened in place for the mandatory `h=XY_Z` correction; following independently passing Python/JS conformance and Founder acceptance, v0.6 was re-frozen in place without a version bump. The `punkti/0.6` namespace and frozen v0.5.1 history remain unchanged. Implementation verification does not claim live network availability, PQ signature support or guaranteed long-term preservation.
 Scope: Minimal virtual Layer-3 carrier and provenance boundary.
 Compatibility: Frozen v0.5.1 atoms coexist unchanged with the explicitly branded v0.6 namespace.
 
@@ -229,4 +229,4 @@ The accepted publication model is a tiny mutable discovery root pointing to immu
 
 The first experiment is preserved under `experimental/punkti-v0.6-static/` and demonstrated daemon-free replication through a plain static HTTP server, two-/three-node convergence, hostile/failure handling, and a strong request-count advantage for immutable replication packs.
 
-The 2026-10-27 freeze was explicitly reopened in place by Founder decision on 2026-10-29. This is the **v0.6 spatial-only correction under review**; re-freeze happens only after independent evidence plus Founder acceptance.
+The 2026-10-27 freeze was reopened in place by Founder decision on 2026-10-29, and **re-frozen as v0.6 spatial-only** after independent Python/JS conformance results and explicit Founder acceptance. The canonical new contract requires XY_Z for every atom; no unanchored publication class.

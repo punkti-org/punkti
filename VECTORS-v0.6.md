@@ -1,6 +1,6 @@
 # Normative publication vectors
 
-Status: **v0.6 spatial-only correction under review**. v0.6 is **reopened in place** by Founder decision on **2026-10-29**; the **2026-10-27 freeze was explicitly reopened**. **Re-freeze happens only after independent evidence plus Founder acceptance**. The `punkti/0.6` namespace and frozen v0.5.1 history remain unchanged.
+Status: **FROZEN — Founder-accepted spatial-only Punkti v0.6, 2026-10-29**. The 2026-10-27 freeze was reopened in place for the mandatory `h=XY_Z` correction; following independently passing Python/JS conformance and Founder acceptance, v0.6 was re-frozen in place without a version bump. The `punkti/0.6` namespace and frozen v0.5.1 history remain unchanged. Implementation verification does not claim live network availability, PQ signature support or guaranteed long-term preservation.
 
 These vectors are self-contained over logical bytes, not filesystem paths.
 They use the [carrier](Punkti-v0.6.md), [spatial profile](Punkti-v0.6-spatial.md)

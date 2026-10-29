@@ -1,6 +1,6 @@
 # Punkti 0.6 — normative static publication contract
 
-Status: **v0.6 spatial-only correction under review**. v0.6 is **reopened in place** by Founder decision on **2026-10-29**; the **2026-10-27 freeze was explicitly reopened**. **Re-freeze happens only after independent evidence plus Founder acceptance**. The `punkti/0.6` namespace and frozen v0.5.1 history remain unchanged.
+Status: **FROZEN — Founder-accepted spatial-only Punkti v0.6, 2026-10-29**. The 2026-10-27 freeze was reopened in place for the mandatory `h=XY_Z` correction; following independently passing Python/JS conformance and Founder acceptance, v0.6 was re-frozen in place without a version bump. The `punkti/0.6` namespace and frozen v0.5.1 history remain unchanged. Implementation verification does not claim live network availability, PQ signature support or guaranteed long-term preservation.
 
 **Source:** CEO-OS Issue #21. Supersedes the *experiment* profile in
 `experimental/punkti-v0.6-static/docs/SPEC.md` as a normative source. The experiment
@@ -23,6 +23,7 @@ only, see §11.
 | 3 | Clarifications after the second review pass: pack magic length corrected from 10 to **11** ASCII bytes (`PUNKTIPACK1`); pack entry order fixed to ascending `sha256`; shard `packs` list order fixed to ascending content address; index tree shape constrained (no empty subtree, no dangling shard, manifest index lists exactly the depth-2 prefixes that occur). |
 | 4 | Historical 2026-10-27 Founder freeze decision: packs confirmed as an **optional standardized accelerator**; publication frozen together with the v0.6 carrier and XY_Z contracts. That freeze was explicitly reopened by rev 5. |
 | 5 | Founder decision 2026-10-29: v0.6 reopened in place; **v0.6 spatial-only correction under review**. Every record requires canonical `h`; only geographical index keys remain. Re-freeze happens only after independent evidence plus Founder acceptance. |
+| 6 | Founder **re-freeze accepted 2026-10-29** after passing revised Python/JS conformance: spatial-only h mandatory, `~` forbidden; historical v0.5.1 unchanged. See CEO-OS §22. |
 
 ---
 

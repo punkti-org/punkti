@@ -40,7 +40,7 @@ It defines:
 
 1. **The atom** — a signed message connected to a point in 3D space.
 2. **The storage model** — append-oriented, content-addressed atom storage.
-3. **The sync model** — v0.5.1 uses immutable HTTP byte-range log generations; the accepted v0.6 draft direction is static publication over ordinary HTTP, with dynamic sync APIs optional accelerators.
+3. **The sync model** — v0.5.1 uses immutable HTTP byte-range log generations; the frozen spatial-only v0.6 protocol specifies static publication over ordinary HTTP, with dynamic sync APIs optional accelerators.
 
 Punkti is not a hosted product. It is the open foundation that different implementations can build on.
 
@@ -107,7 +107,7 @@ Any compatible node can later retrieve or replicate it.
 
 ## Status
 
-Status: **v0.6 spatial-only correction under review**. v0.6 is **reopened in place** by Founder decision on **2026-10-29**; the **2026-10-27 freeze was explicitly reopened**. **Re-freeze happens only after independent evidence plus Founder acceptance**. The `punkti/0.6` namespace and frozen v0.5.1 history remain unchanged.
+Status: **FROZEN — Founder-accepted spatial-only Punkti v0.6, 2026-10-29**. The 2026-10-27 freeze was reopened in place for the mandatory `h=XY_Z` correction; following independently passing Python/JS conformance and Founder acceptance, v0.6 was re-frozen in place without a version bump. The `punkti/0.6` namespace and frozen v0.5.1 history remain unchanged. Implementation verification does not claim live network availability, PQ signature support or guaranteed long-term preservation.
 
 Punkti v0.6 defines the complete Layer-3 contract: canonical carrier/signing/MID/R identity, human-readable `h=<xy>_<z>` spatial addressing, and static publication/replication over ordinary HTTP. Dynamic PUSH/Range-PULL/session mechanisms are optional accelerators, not conformance requirements. Replication packs are a standardized optional accelerator; canonical individual R objects remain sufficient. Every v0.6 record requires canonical `h=<xy>_<z>`: 4–12 lowercase geohash characters, an underscore and canonical exact signed decimal WGS84 ellipsoidal metres, 6..32 characters total. Empty, missing, null or malformed addresses fail structural validation before algorithm dispatch. Publications contain only geographical index keys; all eligible records participate in XY routing. An unrestricted scope selects all anchored records. Punkto L4 replies use their parent's same exact `h`; Punkti L3 keeps references opaque.
 

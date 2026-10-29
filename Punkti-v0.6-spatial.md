@@ -1,8 +1,10 @@
 # Punkti 0.6 — restored XY_Z spatial address profile
 
-Status: **FROZEN — Punkti v0.6 Layer 3, Founder-approved 2026-10-27.** This document defines the human-readable spatial model for Punkti 0.6 and replaces the provisional interleaved 3D geohash profile. Frozen v0.5.1 remains unchanged.
+Status: **v0.6 spatial-only correction under review**. v0.6 is **reopened in place** by Founder decision on **2026-10-29**; the **2026-10-27 freeze was explicitly reopened**. **Re-freeze happens only after independent evidence plus Founder acceptance**. The `punkti/0.6` namespace and frozen v0.5.1 history remain unchanged.
 
-Normative inputs for Punkti v0.6 Layer 3 are this document, `PUNKTI_0_6_LAYER3_RESET.md`, and `PUNKTI_0_6_PUBLICATION.md`. Dynamic Mesh is optional acceleration, not part of normative conformance.
+This document defines the human-readable spatial model for every Punkti 0.6 record.
+
+Normative inputs for Punkti v0.6 Layer 3 are this document, [Punkti-v0.6.md](Punkti-v0.6.md), and [Punkti-v0.6-publication.md](Punkti-v0.6-publication.md). Dynamic Mesh is optional acceleration, not part of normative conformance.
 
 ---
 
@@ -54,15 +56,14 @@ governs the 0.6 `punkti/0.6` carrier and any 0.6-draft client encoding.
 ## 2. Canonical grammar of `h`
 
 ```
-h        := ""                       ; unanchored (see 2.4)
-           | XY "_" Z                ; canonical spatial address
+h        := XY "_" Z                ; required canonical spatial address
 XY       := <4..12 characters>       ; geohash alphabet only
 Z        := <canonical decimal>      ; see 2.3
 ```
 
 * The separator is exactly one ASCII underscore `_` (U+005F).
 * `_` is not a member of the geohash alphabet, so the split is unambiguous.
-* The maximum canonical `h` length is **32 characters**.
+* The canonical `h` length is **6..32 characters**.
 * A canonical `h` contains exactly one `_`.
 
 ### 2.1 XY component
@@ -171,17 +172,22 @@ resolution (3 decimal places) and then strip trailing zeros, producing the
 canonical spelling. This is a *client policy*, not a grammar restriction: the
 grammar itself accepts any number of decimal places.
 
-### 2.4 Unanchored `h`
+### 2.4 Spatial-only records
 
-The empty string `h = ""` remains valid and means **unanchored**: the atom
-makes no spatial claim. This is preserved from the #17 baseline. It is not a
-canonical spatial address and carries neither XY nor Z.
+Every v0.6 record MUST have `h = <xy>_<z>`. Empty `h`, missing `h`,
+`h: null`, arbitrary or malformed `h` is **INVALID-structural**. Check this
+before and independently of algorithm dispatch; an unsupported `alg` MUST NOT
+rescue an invalid address. Never assign a default `h`, synthesise `_0`, or
+derive a location from the client, network, IP address or device.
+
+There is no unanchored record class in revised v0.6. Every eligible record
+participates in XY routing.
 
 ### 2.5 Length and validity summary
 
 | Property | Rule |
 |---|---|
-| `h` length | 0, or 4..32 characters |
+| `h` length | 6..32 characters |
 | separator | exactly one `_` |
 | XY length in an address | 4..12 characters |
 | XY length in a scope bound | 1..12 characters |
@@ -304,11 +310,11 @@ z_max is null  or  Z <  z_max
 
 Comparisons are exact decimal comparisons (section 2.3).
 
-### 4.3 Unanchored records
+### 4.3 Unrestricted scope
 
-A record with `h = ""` matches a scope only when **all four** bounds are
-null. Any spatial constraint excludes unanchored records. This preserves the
-#17 baseline rule.
+A scope with all four bounds null selects **all anchored records**. Every
+eligible record is in the XY tree; no hidden global bucket exists. Invalid
+addresses fail structural validation even when the scope is unrestricted.
 
 ### 4.4 Bound validation
 
@@ -322,15 +328,19 @@ null. Any spatial constraint excludes unanchored records. This preserves the
 
 ### 4.5 Multiple scopes
 
-Multiple scopes form a union, as in the #17 baseline. An empty scope selects
-all, including unanchored records. An empty subscription list selects
-nothing.
+Multiple scopes form a union, as in the #17 baseline. An empty scope (all
+four bounds null) selects all anchored records. An empty subscription list
+selects nothing.
 
 ---
 
 ## 5. Static-publication compatibility
 
-The restored model must support a future directory profile such as:
+The [normative static publication contract](Punkti-v0.6-publication.md) routes
+every eligible record through the XY tree. Publication index keys are only
+geographical prefixes. The removed key `~` MUST NOT be emitted; a manifest,
+index or shard containing it is non-conforming and MUST be rejected clearly.
+An illustrative directory projection is:
 
 ```
 /h/u3b/...        # XY prefix hierarchy
@@ -346,7 +356,8 @@ filesystem layout. Concretely:
   at precision `k`.
 * The optional Z bucket is available because Z is a separate decimal value
   that is meaningful independently of the horizontal precision.
-* The static-tree **transport** is explicitly **not** built in this task.
+* Canonical `R` bytes and `SHA256(R)` are independent of this projection.
+* There is no leaf outside the XY tree and no special leaf budget.
 
 ---
 
@@ -358,19 +369,20 @@ filesystem layout. Concretely:
 * Spatial selection needs no payload interpretation.
 * `x` stays opaque: a human post, AI assertion, sensor measurement, news
   event or unknown future protocol requires no Layer-3 interpretation.
-* No Layer-4 meaning is introduced by this profile.
+* A Punkto L4 reply MUST use the same exact `h` as its parent. Punkti L3
+  transports opaque refs and does not interpret "reply". No compulsory semantic
+  identity channel, names, moderation, communities or object-location claims
+  are introduced by this correction.
 
 ---
 
 ## 7. Interoperability consequences
 
-`h` participates in canonical bytes `C`, in the signature `S` and in the
-content digest `MID`. Changing the spatial profile therefore legitimately
-changes the MIDs, addresses and signatures of every atom that carries a
-spatial address. This is expected and is not a regression.
-
-The exact before/after scope of the change is recorded in the vector
-artifacts and in the freeze report. Frozen v0.5.1 history is not mutated.
+`h` participates in canonical bytes `C`, signing input `S` and content digest
+`MID`. This correction leaves the exact C/S/MID/R framing and all existing
+canonical spatial addresses unchanged. MID still identifies immutable content;
+`SHA256(R)` still addresses the static raw record. Invalid addresses are rejected,
+never repaired or assigned a location. Frozen v0.5.1 history is not mutated.
 
 ---
 
@@ -383,7 +395,7 @@ Implementations and vectors MUST cover, at minimum:
 2. **Negative Z** — `-18` is canonical; `-0` is not.
 3. **Decimal Z** — `23.025` is canonical; `23.0` and `23.50` are not.
 4. **XY prefix range** — `xy_lo = "u3b"`, `xy_hi = "u3c"` selects `u3bu` and
-   `u3butz7k9q` and excludes `u3c`.
+   `u3butz7k9q` and excludes `u3c0`.
 5. **Invalid canonical forms** — `+23`, `2.3e1`, `023`, `23.`, `23.0`, `-0`,
    `0.0`, non-ASCII digits, an XY of 3 or 13 characters in an address, a
    missing separator, a doubled separator, an empty Z, and an `h` longer than
@@ -400,6 +412,10 @@ Implementations and vectors MUST cover, at minimum:
 10. **Bound comparison uses `K`** — a scope with `xy_lo = "u3b"` and
     `xy_hi = "u3b0"` is rejected as equal bounds (HTTP 400), because both
     bounds name the same lower edge.
+11. **Spatial-only structure** — empty, missing, null and malformed `h` fail
+    before algorithm dispatch, including unsupported algorithms.
+12. **Geographical publication only** — reject `~` index keys and `~` shards;
+    an unrestricted scope selects all anchored records, including `0000_0`.
 
 ---
 
@@ -463,9 +479,9 @@ containment (§4.1.1).
 | Range | XY | `K(xy)` | Selected |
 |---|---|---|---|
 | `[u3b, u3c)` | `u3bu` | `u3bu00000000` | yes |
-| `[u3b, u3c)` | `u3b` | `u3b000000000` | yes |
+| `[u3b, u3c)` | `u3b0` | `u3b000000000` | yes |
 | `[u3b, u3c)` | `u3butz7k9q` | `u3butz7k9q00` | yes |
-| `[u3b, u3c)` | `u3c` | `u3c000000000` | no |
+| `[u3b, u3c)` | `u3c0` | `u3c000000000` | no |
 | `[u3butz7k9q, u3butz7k9r)` | `u3bu` | `u3bu00000000` | no |
 | `[u3butz7k9q, u3butz7k9r)` | `u3butz7k9q` | `u3butz7k9q00` | yes |
 | `[u3butz7k9q, u3butz7k9r)` | `u3butz7k9r` | `u3butz7k9r00` | no |
@@ -518,8 +534,8 @@ this candidate, not an oversight.
    a smaller diff but would have kept implying that the bound applies to the
    whole of `h`.
 5. **XY precision of a published address.** 4..12 is permitted with 10
-   recommended. Whether publication should be *restricted* to 10 (with
-   shorter XY existing only as a subscription prefix) is not decided here.
+   recommended. All canonical 4..12-character XY addresses participate in
+   publication routing; leaf precision does not restrict address precision.
 6. **`h` length limit.** The 32-character maximum applies to the whole
    address, which transitively limits Z to 27 characters and XY to 12.
 7. **Client-side integration.** The #17 baseline has no 0.6-draft atom

@@ -1,6 +1,6 @@
 # Punkti 0.6 — normative static publication contract
 
-**Status:** **FROZEN — Punkti v0.6 Layer 3, Founder-approved 2026-10-27.** This freezes the publication contract together with the accepted v0.6 carrier (C/S/MID/R) and XY_Z spatial contract. It does not deploy a product or freeze any Layer-4 application semantics.
+Status: **v0.6 spatial-only correction under review**. v0.6 is **reopened in place** by Founder decision on **2026-10-29**; the **2026-10-27 freeze was explicitly reopened**. **Re-freeze happens only after independent evidence plus Founder acceptance**. The `punkti/0.6` namespace and frozen v0.5.1 history remain unchanged.
 
 **Source:** CEO-OS Issue #21. Supersedes the *experiment* profile in
 `experimental/punkti-v0.6-static/docs/SPEC.md` as a normative source. The experiment
@@ -9,11 +9,10 @@ remains the implementation/measurement evidence for this document.
 **Baseline branch:** `draft/punkti-0.6-static-first` (contains the accepted #19 XY_Z
 corrective and the accepted #20 static-first architecture).
 
-**Related:** [PUNKTI_0_6_LAYER3_RESET.md](PUNKTI_0_6_LAYER3_RESET.md) (C/S/MID/R and
-validation states — unchanged here), [PUNKTI_0_6_SPATIAL_XY_Z.md](PUNKTI_0_6_SPATIAL_XY_Z.md)
-(`h = <xy>_<z>` — unchanged here), [PUNKTI_0_6_STATIC_PUBLICATION.md](PUNKTI_0_6_STATIC_PUBLICATION.md)
-(accepted architecture decision), [PUNKTI_0_6_MESH.md](PUNKTI_0_6_MESH.md) (dynamic mesh
-spec — optional acceleration only, see §11).
+**Related:** [carrier](Punkti-v0.6.md) (unchanged C/S/MID/R framing),
+[spatial profile](Punkti-v0.6-spatial.md) (required `h = <xy>_<z>`), and
+[normative vectors](VECTORS-v0.6.md). Dynamic Mesh is optional acceleration
+only, see §11.
 
 **Revision history**
 
@@ -22,7 +21,8 @@ spec — optional acceleration only, see §11).
 | 1 | Initial contract. |
 | 2 | Fixed two internal inconsistencies found by the implementing agent before any code was written: (a) the XY prefix-interval endpoints were degenerate (§8 step 3) — replaced by the explicit prefix-interval definition in §4.2; (b) the pack-membership rule contradicted the pack grouping rule for leaves with more than 256 records (§6) — replaced by a collective-union rule. No normative rule was weakened; §4.2 and §6 are now implementable as written. |
 | 3 | Clarifications after the second review pass: pack magic length corrected from 10 to **11** ASCII bytes (`PUNKTIPACK1`); pack entry order fixed to ascending `sha256`; shard `packs` list order fixed to ascending content address; index tree shape constrained (no empty subtree, no dangling shard, manifest index lists exactly the depth-2 prefixes that occur). |
-| 4 | Founder freeze decision: packs confirmed as an **optional standardized accelerator**; `~` confirmed as the reserved unanchored index key; publication frozen together with the v0.6 carrier and XY_Z contracts. |
+| 4 | Historical 2026-10-27 Founder freeze decision: packs confirmed as an **optional standardized accelerator**; publication frozen together with the v0.6 carrier and XY_Z contracts. That freeze was explicitly reopened by rev 5. |
+| 5 | Founder decision 2026-10-29: v0.6 reopened in place; **v0.6 spatial-only correction under review**. Every record requires canonical `h`; only geographical index keys remain. Re-freeze happens only after independent evidence plus Founder acceptance. |
 
 ---
 
@@ -41,7 +41,6 @@ agree with it.
 | `min_symbol` / `max_symbol` | `0` / `z` | smallest / largest geohash symbol used for interval padding |
 | `geohash_alphabet` | `0123456789bcdefghjkmnpqrstuvwxyz` | lowercase geohash alphabet, 32 symbols |
 | `max_index_entries` | 1024 | 32² distinct depth-2 XY prefixes |
-| `unanchored_key` | `~` | reserved manifest index key for `h = ""` |
 | `pack_magic` | `PUNKTIPACK1` | pack framing magic, **11 ASCII bytes**, no terminator |
 | `pack_max_entries` | 256 | maximum records in one pack |
 | `digest_len` | 64 | hex characters of a SHA-256 content address |
@@ -50,7 +49,6 @@ agree with it.
 | `root_members` | `head`, `seq`, `v` | root pointer member names |
 | `shard_members` | `children`, `packs`, `prefix`, `records`, `v` | shard member names |
 | `record_entry_members` | `h`, `mid`, `sha256` | index record entry member names |
-| `unanchored_address` | `""` | the `h` value of an unanchored atom |
 | `full_address_prefix` | `punkti/0.6:` | namespace of a full MID address |
 
 ---
@@ -136,8 +134,8 @@ Content address = SHA-256 of exact canonical-JSON bytes.
 * `v` MUST equal `punkti/pub/0.6`; `seq` MUST equal the `seq` of the root pointer
   that names this manifest.
 * `index` maps a **depth-2 XY prefix** to the content address of a shard. Maximum
-  1024 XY entries (geohash alphabet has 32 symbols) plus at most one reserved
-  entry `"~"` (§3.1).
+  1024 XY entries (geohash alphabet has 32 symbols). Only geographical index
+  keys are allowed; the removed `~` key MUST NOT be emitted or accepted.
 * `record_count` is the number of record objects referenced by the publication.
 * `pack_count` is the number of pack objects referenced by the publication.
 * `prev` is the content address of the previous manifest of this publication, or
@@ -147,19 +145,6 @@ Content address = SHA-256 of exact canonical-JSON bytes.
   manifest's content address. A reader MUST reject a manifest in which `seq` and
   the nullness of `prev` disagree.
 * No other members.
-
-### 3.1 Unanchored records
-
-Records with `h = ""` are unanchored and MUST remain representable and
-replicable. They MUST NOT be mixed into an XY prefix subtree, because the padded
-key of an unanchored record would collide with a real XY cell.
-
-* The reserved index key is `"~"`. `"~"` is not a geohash character, so it can never
-  collide with an XY prefix.
-* The shard named by `"~"` is a **leaf** shard whose `prefix` is `"~"` and which
-  lists only records with `h = ""`. It has no children.
-* No other index key may be `"~"`, and no XY shard may contain an unanchored
-  record.
 
 ---
 
@@ -172,8 +157,8 @@ Content address = SHA-256 of exact canonical-JSON bytes.
 ```
 
 * Members are exactly `v`, `prefix`, `children`, `records`, `packs`.
-* `prefix` is either a geohash prefix (lowercase, characters from
-  `0123456789bcdefghjkmnpqrstuvwxyz`) or `"~"`.
+* `prefix` is a geographical geohash prefix of length 2..10 (lowercase,
+  characters from `0123456789bcdefghjkmnpqrstuvwxyz`).
 * A shard is **interior** when `children` is non-empty; then `records` and `packs`
   MUST be empty. A shard is a **leaf** when `records` is non-empty; then `children`
   MUST be empty.
@@ -197,12 +182,12 @@ The XY index is a prefix tree over the **12-character key space**.
   a geohash `xy` of 1–12 characters. `xy` itself is 4–12 characters in a canonical
   address; a shorter `xy` denotes the cell that contains it, exactly as in the
   accepted spatial profile.
-* A record with anchored address `h = <xy>_<z>` is filed under the **leaf prefix**
+* Every eligible record has address `h = <xy>_<z>` and is filed under the **leaf prefix**
   `L = K(xy)[:10]` (leaf depth `D = 10`).
 * The publication tree is: root → manifest → depth-2 shard → … → depth-10 leaf.
   Interior shard prefixes are the successive prefixes of `L`.
 * The manifest index MUST list **exactly** the depth-2 prefixes that occur among
-  the publication's leaves (at most 1024) plus at most one `"~"` entry. A depth-2
+  the publication's leaves (at most 1024). A depth-2
   prefix that occurs MUST be present; a depth-2 prefix that does not occur MUST
   NOT be present.
 * Every interior shard MUST have at least one child; every child key MUST occur
@@ -210,7 +195,8 @@ The XY index is a prefix tree over the **12-character key space**.
   empty subtree and no dangling shard.
 * A shard at prefix `p` is only reachable through its parent prefix `p[:-1]`; a
   reader MUST verify the prefix chain while walking.
-* The `"~"` leaf is not part of the XY tree and has no parent.
+* Every eligible record participates in XY routing. There is no leaf outside
+  the XY tree and no additional leaf allowance.
 
 The canonical address `h` never depends on this geometry; the geometry is an
 indexing layout only.
@@ -236,7 +222,8 @@ paths and not over decimal numbers.
 * A **scope** is the accepted lower-edge scope of the spatial profile:
   `xy_lo` / `xy_hi` (inclusive lower, exclusive upper, over `K`), `z_min` /
   `z_max` (inclusive lower, exclusive upper, over exact decimals), each possibly
-  absent. A scope is *unrestricted* when all four members are absent.
+  null (an absent member denotes an unbounded/null bound). A scope is
+  *unrestricted* when all four bounds are null; it selects all anchored records.
 * The **XY interval** of a scope is
   `[K(xy_lo), K(xy_hi))` when both bounds are present, `[K(xy_lo), +∞)` or
   `(-∞, K(xy_hi))` when one is absent, and `(-∞, +∞)` when neither is.
@@ -249,8 +236,6 @@ paths and not over decimal numbers.
   I(p).high >= scope.XY.low    (or true when the scope has no lower bound)
   ```
 
-* The `"~"` prefix is selected **only** by an unrestricted scope: any XY or Z
-  constraint excludes unanchored records.
 * Selection happens on prefixes only; the Z constraint cannot be applied to a
   prefix, because Z is independent of XY and is not part of any index key. A
   reader therefore applies X/Y filtering before fetching record content, and Z
@@ -352,15 +337,16 @@ Reader algorithm:
    stale cached state.
 2. Fetch the manifest named by `head`. **Verify `SHA256(bytes) == head`** — the
    content address is the only integrity guarantee of the pointer. Verify its
-   shape per §3, and that `manifest.seq == root.seq`.
-3. For each manifest index key, decide whether it can intersect the requested
-   scope, using §4.2:
-   * an XY prefix key is selected iff its key interval `I(p)` overlaps the scope's
-     XY interval;
-   * the `"~"` key is selected only by an unrestricted scope.
+   shape per §3, and that `manifest.seq == root.seq`. Validate **all** index
+   keys before scope pruning; any `~` key makes the publication non-conforming.
+3. For each geographical manifest index key, select it iff its key interval
+   `I(p)` overlaps the requested scope's XY interval (§4.2). An unrestricted
+   scope selects all anchored records through this same XY tree.
 4. Fetch the selected shard, verify its content address, validate its shape per
    §4, and descend into `children` only while the child prefix still intersects
-   the scope (§4.2). Verify the prefix chain at every level.
+   the scope (§4.2). Verify the prefix chain at every level and validate all
+   child keys before scope pruning. Reject `~` keys or a `~` shard as
+   non-conforming; never interpret them as a global bucket.
 5. For every selected leaf, obtain the records:
    * **pack profile** — fetch the leaf's packs (verifying each content address),
      decode them per §6, and enforce the per-pack and collective rules;
@@ -368,7 +354,8 @@ Reader algorithm:
 6. For every fetched `R`: verify `SHA256(R)` against the index entry, decode and
    validate it with the accepted carrier validator, recompute the MID from `C`,
    and require the recomputed MID and `h` to equal the index entry's `mid` and
-   `h`.
+   `h`. The carrier MUST validate `h` before and independently of algorithm
+   dispatch; unsupported algorithms cannot rescue an invalid address.
    * A record that fails structural decoding yields **no** recomputable MID. Such
      a record is a **per-record rejection** (§9): the reader MUST NOT admit it,
      MUST NOT treat the missing MID as a metadata mismatch of the read, and MUST
@@ -411,8 +398,11 @@ NOT invalidate a valid record with the same MID.
 | **corrupt object** (bytes do not hash to the address that named them) | fail this attempt; admit nothing | retryable |
 | **publication race** (manifest `seq` ≠ root `seq`) | re-read the root pointer and restart the attempt (bounded retries) | retryable |
 | pack violates the per-pack or collective rule of §6 | fail this attempt; admit nothing | retryable |
-| record fails carrier validation (structural / provenance) | that record is rejected; the rest of the read continues | per-record |
-| unsupported algorithm | that record goes to the candidate store | per-record |
+| manifest/index/shard contains a `~` key, or shard prefix is `~` | reject publication as non-conforming; fail this attempt and admit nothing, even if scope would exclude the key | retryable |
+| empty, missing, null or malformed `h` in a record | `INVALID-structural` before algorithm dispatch; reject the record, explicitly report publication non-conformance, and continue other records under §8 | per-record |
+| malformed spatial address in an index record entry | reject publication as non-conforming; fail this attempt and admit nothing | retryable |
+| record fails other carrier validation (structural / provenance) | that record is rejected; the rest of the read continues | per-record |
+| unsupported algorithm with valid structure, including canonical `h` | that record goes to the candidate store | per-record |
 
 * No failure may produce a partial admission.
 * Re-running a failed read is safe and idempotent.
@@ -438,7 +428,7 @@ identity is the base URL of the static object tree. A replicator needs nothing
 else: no handshake, no session, no token, no callback registration, no peer
 announcement, no coordinator.
 
-Everything in `PUNKTI_0_6_MESH.md` is **optional acceleration** and is explicitly
+Dynamic Mesh is **optional acceleration** and is explicitly
 **not** part of the normative publication surface:
 
 | Dynamic mesh feature | Status |
@@ -464,10 +454,11 @@ packs)**, fetched with plain GETs.
 
 ## 12. What this document does not change
 
-* Atom `C`, `S`, MID and `R` — unchanged (`PUNKTI_0_6_LAYER3_RESET.md`).
-* The `h = <xy>_<z>` spatial profile, the XY_Z codec limits, the lower-edge
-  comparison model and validation states — unchanged
-  (`PUNKTI_0_6_SPATIAL_XY_Z.md`).
+* Atom `C`, `S`, MID and `R` — unchanged ([carrier](Punkti-v0.6.md)).
+* Canonical XY and decimal-Z rules, the 32-character maximum, the lower-edge
+  comparison model and validation state names — unchanged
+  ([spatial profile](Punkti-v0.6-spatial.md)). Every record now requires a
+  canonical address of 6..32 characters; empty addresses are removed.
 * Frozen Punkti 0.5.1 — unchanged.
 * Layer-4 payload semantics, identity and reputation — out of scope.
 
@@ -478,9 +469,8 @@ merge to `main`.
 
 ## 13. Conformance vectors
 
-The normative vectors for this contract live in
-`experimental/punkti-v0.6-publication/` (`docs/NORMATIVE_VECTORS.md` and
-`vectors.json`). They cover, at minimum:
+The normative vectors and deterministic fixture construction for this contract
+live in [VECTORS-v0.6.md](VECTORS-v0.6.md). They cover, at minimum:
 
 | ID | Area |
 |---|---|
@@ -489,10 +479,13 @@ The normative vectors for this contract live in
 | V3 | pack decoding (framing, membership, rejection) |
 | V4 | exact `R` / MID verification |
 | V5 | same MID, distinct `R` digests; invalid variant anti-poisoning |
-| V6 | XY prefix selection |
+| V6 | XY prefix selection; unrestricted scope selects all anchored records |
 | V7 | negative and decimal Z preservation |
 | V8 | stale / missing / corrupt object behaviour |
 | V9 | two independent implementations converging from static-only origins |
+| V10 | invalid spatial addresses rejected structurally before algorithm dispatch |
+| V11 | removed `~` index keys and shards rejected as non-conforming |
+| V12 | valid address-length boundaries and anchored unsupported algorithms |
 
 A vector is normative over *logical objects and bytes*. Path layout, HTTP status
 codes, port numbers, timestamps and wording are not normative.
